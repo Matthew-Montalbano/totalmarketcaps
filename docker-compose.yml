@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    volumes:
+      # Maps your current local directory to /workspaces/app in the container
+      - .:/workspaces/app
+      # Prevents local node_modules from overwriting the container's version
+      - next_modules:/workspaces/app/app/node_modules
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+
+volumes:
+  next_modules:
