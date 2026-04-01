@@ -1,5 +1,6 @@
 "use client";
 
+import { rankItem } from "@tanstack/match-sorter-utils";
 import {
   useReactTable,
   getCoreRowModel,
@@ -11,6 +12,8 @@ import {
   SortDirection,
   PaginationState,
   getPaginationRowModel,
+  FilterFn,
+  getFilteredRowModel,
 } from "@tanstack/react-table";
 import { useState } from "react";
 
@@ -42,17 +45,39 @@ export default function AssetTable({ data }: { data: TableRow[] }) {
     pageSize: 100,
   });
 
+  const [globalFilter, setGlobalFilter] = useState("");
+
+  const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value);
+
+    // Store the ranking info so we can use it for sorting later if needed
+    addMeta({
+      itemRank,
+    });
+
+    // Return if the item passed the ranking criteria
+    return itemRank.passed;
+  };
+
   const table = useReactTable({
     data,
     columns,
     state: {
       pagination,
       sorting,
+      globalFilter,
     },
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: fuzzyFilter,
     onPaginationChange: setPagination,
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    onGlobalFilterChange: setGlobalFilter,
+    getFilteredRowModel: getFilteredRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -71,9 +96,18 @@ export default function AssetTable({ data }: { data: TableRow[] }) {
       style={{
         display: "flex",
         flexDirection: "column",
+        marginTop: "0.5em",
+        padding: "1em",
       }}
     >
-      <table>
+      <input
+        value={globalFilter ?? ""}
+        onChange={(e) => setGlobalFilter(e.target.value)}
+        placeholder="Find Assets"
+        className="p-2 border mb-2"
+        style={{ alignSelf: "end", borderRadius: "1em" }}
+      />
+      <table className="mt-0 mb-3 border">
         <thead>
           {table.getHeaderGroups().map((hg) => (
             <tr key={hg.id}>

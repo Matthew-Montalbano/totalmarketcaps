@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./Navbar.module.css";
 
 export default function Navbar() {
@@ -14,16 +15,22 @@ export default function Navbar() {
         }}
       >
         <li className={styles.navItem}>
-          <a href="/">Home</a>
+          <Link href={"/"}>Home</Link>
         </li>
         <li className={styles.navItem}>
-          <a href="news.html">Commodities</a>
+          <Link href={"/stocks"}>Stocks</Link>
         </li>
         <li className={styles.navItem}>
-          <a href="contact.html">Crytpo</a>
+          <Link href={"/crypto"}>Crypto</Link>
         </li>
         <li className={styles.navItem}>
-          <a href="about.html">About</a>
+          <Link href={"/commodities"}>Commodities</Link>
+        </li>
+        <li className={styles.navItem}>
+          <Link href={"/forex"}>Foreign Exchange</Link>
+        </li>
+        <li className={styles.navItem}>
+          <Link href={"/about"}>About</Link>
         </li>
       </ul>
     </nav>
